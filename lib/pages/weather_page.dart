@@ -13,6 +13,7 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage> {
   Weather? _weather;
+  var _now;
 
   void _fetchWeather() async {
     final weather = await WeatherService();
@@ -20,6 +21,7 @@ class _WeatherPageState extends State<WeatherPage> {
       setState(() {
         _weather = weather;
       });
+      _now = DateTime.now();
     } catch (e) {
       throw Exception(e);
     }
@@ -48,9 +50,9 @@ class _WeatherPageState extends State<WeatherPage> {
   String checkSuspension(String mainCondition) {
     final description = mainCondition.toLowerCase();
     if (description.contains('heavy') || description.contains('extreme')) {
-      return 'Suspended 😴';
+      return 'Suspended';
     } else {
-      return 'No announcements 🤷‍♂️';
+      return 'No announcements ️';
     }
   }
 
@@ -62,21 +64,49 @@ class _WeatherPageState extends State<WeatherPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "How's the weather in UD pare? 🏹 💚",
+              "How's the weather pare?",
+              style: TextStyle(fontSize: 16),
             ),
             Text(
-              '${_weather?.temperature}°C',
-              style: const TextStyle(fontSize: 40),
+              '${_weather?.temperature.round()}°C',
+              style: const TextStyle(fontSize: 48),
             ),
             Lottie.asset(getWeatherAnimation(
                 _weather?.mainCondition ?? "assets/sunny.json")),
             Text(
               _weather?.mainCondition ?? "",
-              style: const TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 24),
             ),
-            Text(_weather?.cityName ?? "loading city"),
             const SizedBox(
-              height: 40,
+              height: 4,
+            ),
+            const Text(
+              "De La Salle University – Dasmariñas",
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            const Text(
+              'Last updated:',
+              style: TextStyle(color: Colors.black38),
+            ),
+            Text(
+              _now.toString().substring(0, 19),
+              style: const TextStyle(color: Colors.black38),
+            ),
+            InkWell(
+                onTap: () {
+                  _fetchWeather();
+                },
+                child: const Text(
+                  "Refresh",
+                  style: TextStyle(
+                      color: Colors.black54,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.black54),
+                )),
+            const SizedBox(
+              height: 36,
             ),
             ElevatedButton(
               onPressed: () {
@@ -89,6 +119,10 @@ class _WeatherPageState extends State<WeatherPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Icon(
+                                Icons.announcement_outlined,
+                                size: 44,
+                              ),
                               Text(
                                 checkSuspension(_weather?.mainCondition ?? ""),
                                 style: const TextStyle(fontSize: 24),
@@ -107,7 +141,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                       "https://www.facebook.com/usg.dlsud"));
                                 },
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 8,
                               ),
                               InkWell(
@@ -128,10 +162,19 @@ class _WeatherPageState extends State<WeatherPage> {
                     });
               },
               child: const Text(
-                "Suspended? 🤔",
-                style: TextStyle(color: Colors.black),
+                "Suspended?",
+                style: TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("// Johann.dev"),
           ],
         ),
       ),
